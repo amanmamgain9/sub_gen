@@ -1,0 +1,20 @@
+<div>
+        <input type="file" onChange={handleVideoUpload} accept="video/*" />
+        {videoSrc && <video src={videoSrc} controls width="250" />}
+        <div>
+        <button onClick={generateSubtitles}>Generate Subtitles</button>
+        <button onClick={burnSubtitlesIntoVideo} disabled={!videoSrc}>Burn Subtitles into Video</button>
+        </div>
+        {outputVideoSrc && <div>
+          <h3>Processed Video:</h3>
+          <video src={outputVideoSrc} controls width="250" />
+        </div>}
+          {transcript && <div>
+            <h3>Transcript:</h3>
+            <p>{transcript}</p>
+          </div>}
+          {audioSrc && <div>
+            <h3>Extracted Audio:</h3>
+            <audio src={audioSrc} controls />
+          </div>}
+</div>

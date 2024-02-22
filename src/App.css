@@ -12,12 +12,56 @@ body, html {
 }
 
 /* Custom styles for Pacifico font on headings */
-h1, h2, h3, h4, h5, h6 {
+h1{
     font-family: 'Pacifico', cursive;
 }
+
 
 /* Ensure text is black and background is white */
 .App {
     color: black;
     background-color: white;
+    margin-top: 2em;
+}
+
+.video-container {
+  position: relative;
+  max-height: 500px; /* Maximum video height */
+  border: 1px solid #dee2e6; /* Frame around the video */
+  border-radius: 8px; /* Rounded corners for the frame */
+  overflow: hidden; /* Ensures the video stays within the frame */
+  background: #000; /* Background color for the area not covered by the video */
+  display: flex; /* Using flex to center the video vertically */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+}
+
+video {
+  max-height: 100%; /* Limit video height */
+  height: auto; /* Maintain aspect ratio */
+  width: auto; /* Adjust width based on aspect ratio */
+  max-width: 100%; /* Ensure it doesn't overflow the container */
+}
+
+.remove-video-btn {
+  position: absolute;
+  top: 10px; /* Position from the top of the frame */
+  right: 10px; /* Position from the right of the frame */
+  z-index: 10;
+  background-color: #ffffff; /* White background for the button */
+  color: #dc3545; /* Use a color that stands out for the icon, like bootstrap's danger color */
+  border: none;
+  border-radius: 50%; /* Circular button */
+  width: 30px; /* Fixed width */
+  height: 30px; /* Fixed height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+}
+
+.remove-video-btn:hover {
+  background-color: #f8f9fa; /* Light grey on hover */
+  color: #bd2130; /* Darker shade of red on hover */
 }
