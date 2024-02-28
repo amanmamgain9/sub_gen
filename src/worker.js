@@ -3,7 +3,7 @@ import { pipeline, env } from "@xenova/transformers";
 
 // Disable local models
 env.allowLocalModels = false;
-env.useBrowserCache = false;
+//env.useBrowserCache = false;
 
 // Define model factories
 // Ensures only one model is created of each type
