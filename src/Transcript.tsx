@@ -53,18 +53,7 @@ export default function Transcript({transcribedOutput, videoSrc }: Props) {
         link.click();
         URL.revokeObjectURL(url);
     };
-    
-    const exportTXT = () => {
-        let chunks = transcribedData?.chunks ?? [];
-        let text = chunks
-            .map((chunk:any) => chunk.text)
-            .join("")
-            .trim();
-
-        const blob = new Blob([text], { type: "text/plain" });
-        saveBlob(blob, "transcript.txt");
-    };
-    
+        
     useEffect(() => {
         if (divRef.current) {
             const diff = Math.abs(
@@ -131,10 +120,14 @@ export default function Transcript({transcribedOutput, videoSrc }: Props) {
           <div className="d-flex justify-content-center"> {/* Center the button */}
 
             {(transcribedData?.chunks && transcribedData.chunks.length > 0 && !isBurning) && (
-                <Button variant="primary" onClick={handleBurnToVideo} className="my-2">
-                  Burn to Video
-                </Button>
+                <div>
+                  <Button variant="primary" onClick={handleBurnToVideo} className="my-2 btn-lg">
+                    Burn to Video
+                  </Button>
+                </div>
             )}
+          </div>
+          <div className="d-flex justify-content-center">
             {(true) && (
                 <div className="my-2">
                   <canvas ref={canvasRef} ></canvas>

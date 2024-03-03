@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { FFmpeg } from '@ffmpeg/ffmpeg'	;
 import { fetchFile } from '@ffmpeg/util';
 
-const ffmpeg = new FFmpeg();
+//const ffmpeg = new FFmpeg();
 
 const useBurnSubtitles = (videoSrc:any) => {
     const [outputVideoSrc, setOutputVideoSrc] = useState(null as any);
@@ -36,7 +36,6 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 currentTime = wordEndTime;
             });
         });
-        console.log(assContent);
         return assContent;
     };
 
@@ -52,22 +51,19 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
     const burnSubtitlesIntoVideo = async (transcript:any) => {
         if (!videoSrc) return;
-        if (!ffmpeg.loaded) await ffmpeg.load();
+        //if (!ffmpeg.loaded) await ffmpeg.load();
 
         const videoFilename = 'input.mp4';
-        await ffmpeg.writeFile(videoFilename, await fetchFile(videoSrc));
+        //await ffmpeg.writeFile(videoFilename, await fetchFile(videoSrc));
 
         const subtitlesContent = processTranscriptToASS(transcript);
         const subtitlesFilename = 'subtitles.ass';
-        await ffmpeg.writeFile(subtitlesFilename, subtitlesContent);
-        console.log("lfg");
-        await ffmpeg.exec(['-i', videoFilename, '-vf', `subtitles=${subtitlesFilename}`, 'output.mp4']);
-        console.log("lfg1.2")
-        const data = await ffmpeg.readFile('output.mp4');
-        console.log("lfg2")
-        const outputUrl = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }));
-        console.log(outputUrl);
-        setOutputVideoSrc(outputUrl);
+        //await ffmpeg.writeFile(subtitlesFilename, subtitlesContent);
+        //await ffmpeg.exec(['-i', videoFilename, '-vf', `subtitles=${subtitlesFilename}`, 'output.mp4']);
+        //const data = await ffmpeg.readFile('output.mp4');
+        //const outputUrl = URL.createObjectURL(new Blob(
+         //   [data], { type: 'video/mp4' }));
+        //setOutputVideoSrc(outputUrl);
     };
 
     return { outputVideoSrc, burnSubtitlesIntoVideo };
