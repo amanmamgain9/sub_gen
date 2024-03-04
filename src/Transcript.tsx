@@ -5,7 +5,8 @@ import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { TranscriberData } from "./hooks/useTranscriber";
 import { formatAudioTimestamp } from "./utils/AudioUtils";
 import useBurnSubtitles  from "./hooks/useBurnSubtitles";
-import useVideoSubtitlesRecorder from "./hooks/useVideoSubtitlesRecorder";
+import useVideoSubtitlesRecorder from "./hooks/useVideoSubtitlesRecorder"
+import useVideoSubtitlesDrawer from "./hooks/useVideoSubtitlesDrawer";
 
 interface Props {
     transcribedOutput: TranscriberData | any ;
@@ -32,7 +33,8 @@ export default function Transcript({transcribedOutput, videoSrc }: Props) {
     };
 
     
-    const { videoRef, canvasRef, playVideoWithSubtitles } = useVideoSubtitlesRecorder(videoSrc, stopRecordingCallback);
+    //const { videoRef, canvasRef, playVideoWithSubtitles } = useVideoSubtitlesRecorder(videoSrc, stopRecordingCallback);
+    const { videoRef, canvasRef, playVideoWithSubtitles } = useVideoSubtitlesDrawer(videoSrc, stopRecordingCallback);
     const [isBurning, setIsBurning] = useState(false); 
     const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
     
