@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ProcessingModal from './ProcessingModal';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 
 import { TranscriberData } from "./hooks/useTranscriber";
@@ -19,9 +20,22 @@ export default function Transcript({transcribedOutput, videoSrc }: Props) {
     const [editIndex, setEditIndex] = useState(null);
     const [transcribedData, setTranscribedData] = useState<TranscriberData | any>(transcribedOutput);
     const inputRef = useRef(null as any);
-    const { videoRef, canvasRef, playVideoWithSubtitles } = useVideoSubtitlesRecorder(videoSrc);
-    const [isBurning, setIsBurning] = useState(false); 
+    const [showModal, setShowModal] = useState(false);
+    const [progress, setProgress] = useState(0);
 
+    
+    const stopRecordingCallback = async (processedBlob:any) => {
+        // Your existing code to process the video...
+        // Once you have the processedBlob ready:
+        const url = URL.createObjectURL(processedBlob);
+        setDownloadUrl(url); // Update the state with the new URL
+    };
+
+    
+    const { videoRef, canvasRef, playVideoWithSubtitles } = useVideoSubtitlesRecorder(videoSrc, stopRecordingCallback);
+    const [isBurning, setIsBurning] = useState(false); 
+    const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+    
 
     useEffect(() => {
         if (inputRef.current) {
@@ -80,6 +94,7 @@ export default function Transcript({transcribedOutput, videoSrc }: Props) {
         console.log('Transcribed Data:', transcribedData.chunks);
         //await burnSubtitlesIntoVideo(transcribedData.chunks);
         setIsBurning(true);
+        setShowModal(true);
         await playVideoWithSubtitles(transcribedData.chunks);
         //setIsBurning(false);
         // You would replace this with your actual burning logic
@@ -136,7 +151,19 @@ export default function Transcript({transcribedOutput, videoSrc }: Props) {
                 </div>
             )}
           </div>
+          <div className="d-flex justify-content-center">
+            {downloadUrl && (
+                <a href={downloadUrl} download="recordedVideoWithSubtitles.mp4" style={{ textDecoration: 'none' }}>
+                  <Button variant="success" className="my-2">
+                    Download Video
+                  </Button>
+                </a>
+            )}
+          </div>
+          <ProcessingModal
+              show={showModal}
+              progress={progress}
+              downloadUrl={false} />
         </>
-
     );
 }

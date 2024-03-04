@@ -91,7 +91,7 @@ const createDrawFrame = (video: HTMLVideoElement, canvas: HTMLCanvasElement, sub
     }
 };
 
-export const useVideoSubtitlesRecorder = (videoSrc: string) => {
+export const useVideoSubtitlesRecorder = (videoSrc: string, onRecordingComplete: (blob: Blob) => void) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const recorderRef = useRef<RecordRTC | null>(null);
@@ -156,18 +156,20 @@ export const useVideoSubtitlesRecorder = (videoSrc: string) => {
                 console.log('processedUint8Array', processedUint8Array);
                 const processedBlob = new Blob([processedUint8Array], { type: 'video/mp4' });
                 console.log('processedBlob', processedBlob);
-                const url = URL.createObjectURL(processedBlob);
+                onRecordingComplete(processedBlob);
+
+                //const url = URL.createObjectURL(processedBlob);
 
 
 
-                //const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'recordedVideoWithSubtitles.mp4';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+                // const url = URL.createObjectURL(blob);
+                // const a = document.createElement('a');
+                // a.href = url;
+                // a.download = 'recordedVideoWithSubtitles.mp4';
+                // document.body.appendChild(a);
+                // a.click();
+                // document.body.removeChild(a);
+                // URL.revokeObjectURL(url);
             });
         };
 
