@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ProcessingModal from './ProcessingModal';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap'
 
 import { TranscriberData } from "./hooks/useTranscriber";
 import { formatAudioTimestamp } from "./utils/AudioUtils";
@@ -28,8 +28,9 @@ export default function Transcript({transcribedOutput, videoSrc }: Props) {
     const stopRecordingCallback = async (processedBlob:any) => {
         // Your existing code to process the video...
         // Once you have the processedBlob ready:
-        const url = URL.createObjectURL(processedBlob);
-        setDownloadUrl(url); // Update the state with the new URL
+        //const url = URL.createObjectURL(processedBlob);
+        //setDownloadUrl(url); // Update the state with the new URL
+        setDownloadUrl('http://aman.com')
     };
 
     
@@ -51,7 +52,7 @@ export default function Transcript({transcribedOutput, videoSrc }: Props) {
     }, [transcribedOutput]);
     
     const saveText = (index:number) => {
-        const updatedChunks = [...transcribedData.chunks];
+        const updatedChunks:any = [...transcribedData.chunks];
         updatedChunks[index].text = editText;
         setTranscribedData({ ...transcribedData, chunks: updatedChunks });
         setEditIndex(null);
