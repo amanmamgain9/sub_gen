@@ -16,23 +16,29 @@ const ProcessingModal = ({ show, progress, downloadUrl }:any) => {
 
     return (
         <Modal show={show} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
-            <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">
-                    Processing Video
-                </Modal.Title>
-            </Modal.Header>
-            <Modal.Body className="d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '300px' }}>
+          <Modal.Header closeButton>
+            <Modal.Title id="contained-modal-title-vcenter">
+              Processing Video
+            </Modal.Title>
+
+          </Modal.Header>
+          <Modal.Body className="d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '300px' }}>
+            {(!downloadUrl) && (
+                <>
                 <div style={{ marginBottom: '20px', fontSize: '1.5rem', display: 'flex', justifyContent: 'center' }}>
-                    <span>Processing</span>
-                    <span style={{ display: 'inline-block', width: '30px', textAlign: 'left' }}>{dots}</span>
+
+                  <span>Processing</span>
+                  <span style={{ display: 'inline-block', width: '30px', textAlign: 'left' }}>{dots}</span>
                 </div>
                 <ProgressBar now={progress} label={`${progress}%`} style={{ width: '100%', maxWidth: '500px', height: '20px', marginBottom: '20px' }} />
-                {downloadUrl && (
-                    <a href={downloadUrl} download="recordedVideoWithSubtitles.mp4" style={{ textDecoration: 'none' }}>
-                        <Button variant="success" className="mt-3">Download Video</Button>
-                    </a>
-                )}
-            </Modal.Body>
+                </>
+            )}
+            {downloadUrl && (
+                <a href={downloadUrl} download="recordedVideoWithSubtitles.mp4" style={{ textDecoration: 'none' }}>
+                  <Button variant="success" className="mt-3">Download Video</Button>
+                </a>
+            )}
+          </Modal.Body>
         </Modal>
     );
 };

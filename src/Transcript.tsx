@@ -6,14 +6,15 @@ import { TranscriberData } from "./hooks/useTranscriber";
 import { formatAudioTimestamp } from "./utils/AudioUtils";
 import useBurnSubtitles  from "./hooks/useBurnSubtitles";
 import useVideoSubtitlesRecorder from "./hooks/useVideoSubtitlesRecorder"
-import useVideoSubtitlesDrawer from "./hooks/useVideoSubtitlesDrawer";
+//import useVideoSubtitlesDrawer from "./hooks/useVideoSubtitlesDrawer";
 
 interface Props {
     transcribedOutput: TranscriberData | any ;
     videoSrc: string;
+    videoType: string;
 }
 
-export default function Transcript({transcribedOutput, videoSrc }: Props) {
+export default function Transcript({transcribedOutput, videoSrc, videoType }: Props) {
     const divRef = useRef<HTMLDivElement>(null);
     const [editText, setEditText] = useState("");
     const { outputVideoSrc, burnSubtitlesIntoVideo } = useBurnSubtitles(videoSrc);
@@ -28,14 +29,14 @@ export default function Transcript({transcribedOutput, videoSrc }: Props) {
     const stopRecordingCallback = async (processedBlob:any) => {
         // Your existing code to process the video...
         // Once you have the processedBlob ready:
-        //const url = URL.createObjectURL(processedBlob);
-        //setDownloadUrl(url); // Update the state with the new URL
-        setDownloadUrl('http://aman.com')
+        const url = URL.createObjectURL(processedBlob);
+        setDownloadUrl(url); // Update the state with the new URL
     };
 
     
     //const { videoRef, canvasRef, playVideoWithSubtitles } = useVideoSubtitlesRecorder(videoSrc, stopRecordingCallback);
-    const { videoRef, canvasRef, playVideoWithSubtitles } = useVideoSubtitlesDrawer(videoSrc, stopRecordingCallback);
+    console.log('videoSrc' , videoSrc);
+    const { videoRef, canvasRef, playVideoWithSubtitles } = useVideoSubtitlesRecorder(videoSrc, stopRecordingCallback, videoType);
     const [isBurning, setIsBurning] = useState(false); 
     const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
     
@@ -98,7 +99,7 @@ export default function Transcript({transcribedOutput, videoSrc }: Props) {
         //await burnSubtitlesIntoVideo(transcribedData.chunks);
         setIsBurning(true);
         setShowModal(true);
-        await playVideoWithSubtitles(transcribedData.chunks);
+        await playVideoWithSubtitles(transcribedData.chunks, videoType);
         //setIsBurning(false);
         // You would replace this with your actual burning logic
     };
@@ -148,7 +149,8 @@ export default function Transcript({transcribedOutput, videoSrc }: Props) {
           <div className="d-flex justify-content-center">
             {(true) && (
                 <div className="my-2">
-                  <canvas ref={canvasRef} ></canvas>
+                  <canvas ref={canvasRef} style={{
+                      display:"none"}}></canvas>
                   <video ref={videoRef}  style={{
                       display:"none"}} controls width="640" height="360"></video>
                 </div>
@@ -166,7 +168,7 @@ export default function Transcript({transcribedOutput, videoSrc }: Props) {
           <ProcessingModal
               show={showModal}
               progress={progress}
-              downloadUrl={false} />
+              downloadUrl={downloadUrl} />
         </>
     );
 }

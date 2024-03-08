@@ -61,6 +61,8 @@ const VideoUploader: React.FC<any> = (props:any) => {
             setVideo(file);
             const url = URL.createObjectURL(file);
             props.setVideoSrc(url);
+            // also set type of video
+            props.setVideoType(mimeType);
         }
     };
 

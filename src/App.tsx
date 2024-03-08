@@ -12,6 +12,7 @@ function App(){
 
     const transcriber = useTranscriber();
     const [videoSrc, setVideoSrc] = useState<string | any>(null);
+    const [videoType, setVideoType] = useState<string | any>(null);
     
     return (
         <div className="App">
@@ -24,9 +25,11 @@ function App(){
             <VideoUploader transcriber={transcriber}
                            videoSrc={videoSrc}
                            setVideoSrc={setVideoSrc}
+                           setVideoType={setVideoType}
             />
             <Transcript transcribedOutput={transcriber.output}
                         videoSrc={videoSrc}
+                        videoType={videoType}
             />
           </Container>
         </div>
