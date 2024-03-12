@@ -35,7 +35,6 @@ export default function Transcript({transcribedOutput, videoSrc, videoType }: Pr
 
     
     //const { videoRef, canvasRef, playVideoWithSubtitles } = useVideoSubtitlesRecorder(videoSrc, stopRecordingCallback);
-    console.log('videoSrc' , videoSrc);
     const { videoRef, canvasRef, playVideoWithSubtitles } = useVideoSubtitlesRecorder(videoSrc, stopRecordingCallback, videoType);
     const [isBurning, setIsBurning] = useState(false); 
     const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
@@ -48,7 +47,6 @@ export default function Transcript({transcribedOutput, videoSrc, videoType }: Pr
     }, [editIndex]);
 
     useEffect(() => {
-        console.log('Transcribed Output:', transcribedOutput);
         setTranscribedData(transcribedOutput);
     }, [transcribedOutput]);
     
@@ -94,8 +92,6 @@ export default function Transcript({transcribedOutput, videoSrc, videoType }: Pr
 
     const handleBurnToVideo = async () => {
         // Logic to burn text to video
-        console.log('Burning the text to the video...');
-        console.log('Transcribed Data:', transcribedData.chunks);
         //await burnSubtitlesIntoVideo(transcribedData.chunks);
         setIsBurning(true);
         setShowModal(true);
@@ -149,10 +145,8 @@ export default function Transcript({transcribedOutput, videoSrc, videoType }: Pr
           <div className="d-flex justify-content-center">
             {(true) && (
                 <div className="my-2">
-                  <canvas ref={canvasRef} style={{
-                      display:"none"}}></canvas>
-                  <video ref={videoRef}  style={{
-                      display:"none"}} controls width="640" height="360"></video>
+                  <canvas ref={canvasRef} ></canvas>
+                  <video ref={videoRef}  controls width="640" height="360"></video>
                 </div>
             )}
           </div>

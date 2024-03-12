@@ -2,44 +2,14 @@ import { useCallback, useEffect, useRef } from 'react';
 import RecordRTC from 'recordrtc'; // Import RecordRTC
 import {preProcessSubtitles} from '../utils/SubtitleUtils';
 import FFmpegUtil, {getVideoProperties} from '../utils/FfmpegUtils';
+
+import {createDrawFrame} from './drawframe';
+
 interface Subtitle {
     text: string;
     timestamp: [number, number];
 }
 
-
-// Improved wrapText function
-function wrapText(context:any, text:any, maxWidth:any, nextChar:any) {
-    const words = text.split(' ');
-    let line = '';
-    let lines = [];
-
-    words.forEach((word:string, index:number) => {
-        const testLine = line + word + ' ';
-        const metrics = context.measureText(testLine);
-        const testWidth = metrics.width;
-        const isLastWord = index === words.length - 1;
-        const nextWord = words[index + 1] || '';
-        const futureLine = testLine + nextWord;
-        const futureWidth = context.measureText(futureLine).width;
-
-        // Check if adding next word exceeds maxWidth or if it's the last word
-        if ((futureWidth > maxWidth && !isLastWord && nextChar !== ' ') || (isLastWord && testWidth <= maxWidth)) {
-            lines.push(testLine.trim());
-            line = '';
-        } else if (line !== '') {
-            line = testLine;
-        } else {
-            lines.push(word);
-        }
-    });
-
-    if (line) {
-        lines.push(line.trim()); // Make sure to add any residual text
-    }
-
-    return lines;
-}
 
 
 
@@ -52,63 +22,6 @@ interface DrawFrameCallback {
   (): void;
 }
 
-const createDrawFrame = (
-  video: HTMLVideoElement,
-  canvas: HTMLCanvasElement,
-  subtitles: Subtitle[],
-  callback: DrawFrameCallback
-) => {
-  const ctx = canvas.getContext('2d');
-  if (!ctx) {
-    throw new Error('Could not get canvas context');
-  }
-
-  let scrollStartPosition: number = canvas.width; // Initial position off-canvas to the right
-  const scrollSpeed: number = 2; // Adjust for scrolling speed
-
-  // Style settings
-  ctx.font = '30px Arial';
-  ctx.fillStyle = 'white';
-  ctx.textAlign = 'left';
-
-  // Remove timestamp parameter
-  return function drawFrame() {
-    if (video.ended) {
-      callback();
-      return;
-    }
-    if (video.paused || video.ended) {
-      return;
-    }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    const currentSubtitle = subtitles.find(sub => video.currentTime >= sub.timestamp[0] && video.currentTime <= sub.timestamp[1]);
-
-    if (currentSubtitle) {
-      const textToShow: string = currentSubtitle.text;
-      const maxWidth: number = canvas.width * (2 / 3);
-      const metrics = ctx.measureText(textToShow);
-
-      if (metrics.width > maxWidth) {
-        scrollStartPosition -= scrollSpeed; // Move text to the left
-        if (scrollStartPosition + metrics.width < 0) {
-          scrollStartPosition = canvas.width; // Reset position off-canvas to the right for next subtitle
-        }
-      } else {
-        // Center text if it fits within maxWidth
-        scrollStartPosition = (canvas.width - metrics.width) / 2;
-      }
-
-      let startY: number = canvas.height - 50; // Position subtitles at the bottom
-      ctx.fillText(textToShow, scrollStartPosition, startY);
-    } else {
-      scrollStartPosition = canvas.width; // Reset position when there's no subtitle
-    }
-
-    requestAnimationFrame(drawFrame); // Recursively call drawFrame
-  };
-};
 
 
 export const useVideoSubtitlesRecorder = (videoSrc: string, onRecordingComplete: (blob: Blob) => void, videoType:string) => {
@@ -213,8 +126,11 @@ export const useVideoSubtitlesRecorder = (videoSrc: string, onRecordingComplete:
         //recorderRef.current.start();
 
         video.addEventListener('play', () => {
-            const drawFrame = createDrawFrame(
-                video, canvas, subtitles, stopRecordingCallback);
+            console.log('subtitles' , subtitles);
+            const drawFrame = createDrawFrame(video, canvas, subtitles, stopRecordingCallback);
+            // const drawFrame = createDrawFrame(
+            //     video, canvas, subtitles, stopRecordingCallback);
+            //const drawFrame = createDrawFrame(video, canvas, subtitles, stopRecordingCallback, popInEffect);
             drawFrame(); // Start drawing frames only when video starts playing
     });
     }, []);
