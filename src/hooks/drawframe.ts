@@ -4,6 +4,60 @@ interface Subtitle {
 
 }
 
+interface ProcessedSubtitle {
+  text: string;
+  timestamp: [number, number];
+}
+
+function preprocessSubtitles(ctx: CanvasRenderingContext2D, subtitles: Subtitle[], maxWidth: number): ProcessedSubtitle[] {
+  const processedSubtitles: ProcessedSubtitle[] = [];
+
+  for (const subtitle of subtitles) {
+    const words = subtitle.text.split(' ');
+    const lines: string[] = [];
+    let currentLine = '';
+    let startTime = subtitle.timestamp[0];
+    let endTime = subtitle.timestamp[1];
+    const duration = endTime - startTime;
+    const wordsPerSecond = words.length / duration;
+
+    for (const word of words) {
+      const lineWithWord = currentLine ? `${currentLine} ${word}` : word;
+      const lineWidth = ctx.measureText(lineWithWord).width;
+
+      if (lineWidth <= maxWidth) {
+        currentLine = lineWithWord;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+
+    const processedLines: ProcessedSubtitle[] = [];
+    let lineStartTime = startTime;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const lineWords = line.split(' ');
+      const lineEndTime = lineStartTime + (lineWords.length / wordsPerSecond);
+
+      processedLines.push({
+        text: line,
+        timestamp: [lineStartTime, lineEndTime],
+      });
+
+      lineStartTime = lineEndTime;
+    }
+
+    processedSubtitles.push(...processedLines);
+  }
+
+  return processedSubtitles;
+}
 // textUtils.ts
 export function wrapText(context: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
     let words = text.split(' ');
@@ -45,7 +99,7 @@ function applyWordEffect(ctx: CanvasRenderingContext2D, word: string, x: number,
 function popInEffect(ctx: CanvasRenderingContext2D, word: string, x: number, y: number) {
   const duration = 200; // Duration of the animation in milliseconds
   const startTime = performance.now();
-  const startScale = 0.2;
+  const startScale = 0.8;
   const endScale = 1.4;
   const shadowOffset = 2;
   const shadowBlur = 4;
@@ -82,6 +136,8 @@ export function drawSubtitles(ctx: CanvasRenderingContext2D, video: HTMLVideoEle
   return [[], 0, 0, 0, 0];
 }
 
+// ... (keep the existing code above)
+
 const createDrawFrame = (
   video: HTMLVideoElement,
   canvas: HTMLCanvasElement,
@@ -96,6 +152,8 @@ const createDrawFrame = (
   ctx.font = '30px Arial';
   ctx.fillStyle = 'white';
   ctx.textAlign = 'left';
+
+  const processedSubtitles = preprocessSubtitles(ctx, subtitles, canvas.width * (2 / 3));
 
   let currentSubtitleIndex = -1;
   let subtitleProgress: SubtitleProgress = {
@@ -117,18 +175,19 @@ const createDrawFrame = (
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    const newSubtitleIndex = subtitles.findIndex(sub => video.currentTime >= sub.timestamp[0] && video.currentTime <= sub.timestamp[1]);
+    const newSubtitleIndex = processedSubtitles.findIndex(sub => video.currentTime >= sub.timestamp[0] && video.currentTime <= sub.timestamp[1]);
 
     if (newSubtitleIndex !== currentSubtitleIndex) {
       currentSubtitleIndex = newSubtitleIndex;
       if (currentSubtitleIndex !== -1) {
-        const [lines, currentLineIndex, wordIndex, startTime, endTime] = drawSubtitles(ctx, video, subtitles, canvas);
+        const { text, timestamp } = processedSubtitles[currentSubtitleIndex];
+        const lines = text.split('\n');
         subtitleProgress = {
           lines,
-          currentLineIndex,
-          wordIndex,
-          startTime,
-          endTime,
+          currentLineIndex: 0,
+          wordIndex: 0,
+          startTime: timestamp[0],
+          endTime: timestamp[1],
         };
       } else {
         subtitleProgress = {
@@ -150,16 +209,17 @@ const createDrawFrame = (
 
       if (targetWordIndex >= subtitleProgress.wordIndex && targetWordIndex < words.length) {
         const word = words[targetWordIndex];
-          const previousWords = words.slice(0, targetWordIndex).join(' ');
-          const padding = 10;
-          
+        const previousWords = words.slice(0, targetWordIndex).join(' ');
+        const padding = 10;
+
         const x = 10 + ctx.measureText(previousWords).width + padding;
         const y = canvas.height - 50;
 
         // Draw the previously printed words
         ctx.fillText(previousWords, 10, y);
 
-        // Apply the effect to the new word
+          // Apply the effect to the new word
+          console.log('word', word);
         applyWordEffect(ctx, word, x, y, effect);
 
         subtitleProgress.wordIndex = targetWordIndex;
@@ -180,4 +240,4 @@ const createDrawFrame = (
   };
 };
 
-export {createDrawFrame};
+export { createDrawFrame };
