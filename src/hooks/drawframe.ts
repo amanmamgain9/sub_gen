@@ -34,7 +34,7 @@ interface SubtitleProgress {
 }
 
 function applyWordEffect(ctx: CanvasRenderingContext2D, word: string, x: number, y: number, effect: string) {
-  if (effect === 'popIn') {
+    if (effect === 'popIn') {
     popInEffect(ctx, word, x, y);
   } else {
     // Default effect: fill the text without any animation
@@ -45,8 +45,10 @@ function applyWordEffect(ctx: CanvasRenderingContext2D, word: string, x: number,
 function popInEffect(ctx: CanvasRenderingContext2D, word: string, x: number, y: number) {
   const duration = 200; // Duration of the animation in milliseconds
   const startTime = performance.now();
-  const startScale = 1.2;
-  const endScale = 1;
+  const startScale = 0.2;
+  const endScale = 1.4;
+  const shadowOffset = 2;
+  const shadowBlur = 4;
 
   function animate() {
     const elapsedTime = performance.now() - startTime;
@@ -56,6 +58,10 @@ function popInEffect(ctx: CanvasRenderingContext2D, word: string, x: number, y: 
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(scale, scale);
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowOffsetX = shadowOffset;
+    ctx.shadowOffsetY = shadowOffset;
+    ctx.shadowBlur = shadowBlur * progress;
     ctx.fillText(word, 0, 0);
     ctx.restore();
 
@@ -135,7 +141,7 @@ const createDrawFrame = (
       }
     }
 
-    if (currentSubtitleIndex !== -1 && subtitleProgress.lines.length > 0 && subtitleProgress.lines[subtitleProgress.currentLineIndex]) {
+    if (currentSubtitleIndex !== -1 && subtitleProgress.lines.length > 0) {
       const words = subtitleProgress.lines[subtitleProgress.currentLineIndex].split(' ');
       const elapsedTime = video.currentTime - subtitleProgress.startTime;
       const subtitleDuration = subtitleProgress.endTime - subtitleProgress.startTime;
@@ -144,11 +150,13 @@ const createDrawFrame = (
 
       if (targetWordIndex >= subtitleProgress.wordIndex && targetWordIndex < words.length) {
         const word = words[targetWordIndex];
-        const x = 10 + ctx.measureText(words.slice(0, targetWordIndex).join(' ')).width;
-        const y = canvas.height - 50 + (subtitleProgress.currentLineIndex * 40);
+          const previousWords = words.slice(0, targetWordIndex).join(' ');
+          const padding = 10;
+          
+        const x = 10 + ctx.measureText(previousWords).width + padding;
+        const y = canvas.height - 50;
 
         // Draw the previously printed words
-        const previousWords = words.slice(0, targetWordIndex).join(' ');
         ctx.fillText(previousWords, 10, y);
 
         // Apply the effect to the new word

@@ -10,20 +10,6 @@ interface Subtitle {
     timestamp: [number, number];
 }
 
-
-
-
-interface DrawFrameCallback {
-    (): void;
-}
-
-
-interface DrawFrameCallback {
-  (): void;
-}
-
-
-
 export const useVideoSubtitlesRecorder = (videoSrc: string, onRecordingComplete: (blob: Blob) => void, videoType:string) => {
     const localVideoSrc = useRef(videoSrc);
     const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -40,7 +26,6 @@ export const useVideoSubtitlesRecorder = (videoSrc: string, onRecordingComplete:
     
 
     const playVideoWithSubtitles = useCallback(async (subtitles: Subtitle[], videoType:string) => {
-        console.log('playVideoWithSubtitles');
         subtitles = preProcessSubtitles(
             subtitles);
         const video = videoRef.current;
@@ -127,7 +112,7 @@ export const useVideoSubtitlesRecorder = (videoSrc: string, onRecordingComplete:
 
         video.addEventListener('play', () => {
             console.log('subtitles' , subtitles);
-            const drawFrame = createDrawFrame(video, canvas, subtitles, stopRecordingCallback);
+            const drawFrame = createDrawFrame(video, canvas, subtitles, stopRecordingCallback, 'popIn');
             // const drawFrame = createDrawFrame(
             //     video, canvas, subtitles, stopRecordingCallback);
             //const drawFrame = createDrawFrame(video, canvas, subtitles, stopRecordingCallback, popInEffect);
@@ -143,7 +128,5 @@ export const useVideoSubtitlesRecorder = (videoSrc: string, onRecordingComplete:
 
     return { videoRef, canvasRef, playVideoWithSubtitles };
 };
+
 export default useVideoSubtitlesRecorder;
-
-
-
