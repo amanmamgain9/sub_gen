@@ -162,6 +162,7 @@ export default function Transcript({transcribedOutput, videoSrc, videoType }: Pr
           <ProcessingModal
               show={showModal}
               progress={progress}
+              setShowModal={setShowModal}
               downloadUrl={downloadUrl} />
         </>
     );

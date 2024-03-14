@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, ProgressBar } from 'react-bootstrap';
 
-const ProcessingModal = ({ show, progress, downloadUrl }:any) => {
+const ProcessingModal = ({ show, progress, downloadUrl, setShowModal }:any) => {
     const [dots, setDots] = useState('');
 
     useEffect(() => {
@@ -16,7 +16,7 @@ const ProcessingModal = ({ show, progress, downloadUrl }:any) => {
 
     return (
         <Modal show={show} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
-          <Modal.Header closeButton>
+          <Modal.Header closeButton onClick={()=>{setShowModal(false)} }>
             <Modal.Title id="contained-modal-title-vcenter">
               Processing Video
             </Modal.Title>

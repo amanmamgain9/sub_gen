@@ -99,8 +99,8 @@ function applyWordEffect(ctx: CanvasRenderingContext2D, word: string, x: number,
 function popInEffect(ctx: CanvasRenderingContext2D, word: string, x: number, y: number) {
   const duration = 200; // Duration of the animation in milliseconds
   const startTime = performance.now();
-  const startScale = 0.8;
-  const endScale = 1.4;
+  const startScale = 1.4;
+  const endScale = 1;
   const shadowOffset = 2;
   const shadowBlur = 4;
 
@@ -211,16 +211,18 @@ const createDrawFrame = (
         const word = words[targetWordIndex];
         const previousWords = words.slice(0, targetWordIndex).join(' ');
         const padding = 10;
+          const x = (canvas.width - (2/3 * canvas.width)) / 2;
 
-        const x = 10 + ctx.measureText(previousWords).width + padding;
+          const wordX = x + ctx.measureText(previousWords).width + padding;
+
         const y = canvas.height - 50;
 
         // Draw the previously printed words
-        ctx.fillText(previousWords, 10, y);
+        ctx.fillText(previousWords, x, y);
 
           // Apply the effect to the new word
           console.log('word', word);
-        applyWordEffect(ctx, word, x, y, effect);
+        applyWordEffect(ctx, word, wordX, y, effect);
 
         subtitleProgress.wordIndex = targetWordIndex;
 

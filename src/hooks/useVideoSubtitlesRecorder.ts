@@ -39,10 +39,11 @@ export const useVideoSubtitlesRecorder = (videoSrc: string, onRecordingComplete:
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        const stream = canvas.captureStream(25); // Capture at 25 FPS
+        
         console.log('videoSrcccc', videoSrc);
         // just get entire vide from videoRef.current
         let {bitrate, frameRate} = await getVideoProperties(localVideoSrc.current, videoType);
+        const stream = canvas.captureStream(frameRate as number); // Capture at 25 FPS
         console.log('bitrate', bitrate);
         console.log('frameRate', frameRate);
          recorderRef.current = new RecordRTC(stream, {
