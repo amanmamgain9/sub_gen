@@ -145,8 +145,10 @@ export default function Transcript({transcribedOutput, videoSrc, videoType }: Pr
           <div className="d-flex justify-content-center">
             {(true) && (
                 <div className="my-2">
-                  <canvas ref={canvasRef} ></canvas>
-                  <video ref={videoRef}  controls width="640" height="360"></video>
+                  <canvas style={{
+                      display:"none"}} ref={canvasRef} ></canvas>
+                  <video style={{
+                      display:"none"}} ref={videoRef}  controls width="640" height="360"></video>
                 </div>
             )}
           </div>

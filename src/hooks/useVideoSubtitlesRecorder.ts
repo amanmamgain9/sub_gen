@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 import RecordRTC from 'recordrtc'; // Import RecordRTC
 import {preProcessSubtitles} from '../utils/SubtitleUtils';
-import FFmpegUtil, {getVideoProperties} from '../utils/FfmpegUtils';
+import FFmpegUtil, {
+    getVideoProperties, extractAudio, addAudioToVideo} from '../utils/FfmpegUtils';
 
 import {createDrawFrame} from './drawframe';
 
@@ -16,12 +17,18 @@ export const useVideoSubtitlesRecorder = (videoSrc: string, onRecordingComplete:
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const recorderRef = useRef<RecordRTC | null>(null);
     const recordedChunksRef = useRef<BlobPart[]>([]);
+    const audioFileName = useRef<string>('');
 
+    const getAudioFileName = (async () => {
+        audioFileName.current = await extractAudio(videoSrc);
+    });
+        
     useEffect(() => {
         if (videoRef.current) {
             videoRef.current.src = videoSrc;
         }
         localVideoSrc.current = videoSrc;
+        getAudioFileName();
     }, [videoSrc]);
     
 
@@ -90,7 +97,9 @@ export const useVideoSubtitlesRecorder = (videoSrc: string, onRecordingComplete:
                 console.log('processedUint8Array', processedUint8Array);
                 const processedBlob = new Blob([processedUint8Array], { type: 'video/mp4' });
                 console.log('processedBlob', processedBlob);
-                onRecordingComplete(processedBlob);
+                const finalBlob = await addAudioToVideo(
+                    processedBlob, audioFileName.current);
+                onRecordingComplete(finalBlob);
 
                 //const url = URL.createObjectURL(processedBlob);
 

@@ -1,6 +1,6 @@
 // ffmpegUtils.ts
-
 import { FFmpeg } from '@ffmpeg/ffmpeg'	;
+
 
 type ExtensionMap = {
     [key: string]: string;
@@ -86,6 +86,62 @@ export async function getVideoProperties(
 
     return { frameRate, bitrate };
 }
+
+
+const generateRandomFileName = (extension: string): string => {
+    const randomString = Math.random().toString(36).substring(7);
+    return `file_${randomString}.${extension}`;
+};
+
+
+
+
+export const extractAudio = async (videoSrc: string): Promise<string> => {
+    const ffmpeg = await FFmpegUtil.getFFmpegInstance();
+    const audioFileName = generateRandomFileName('aac');
+
+
+    // Fetch the video data
+    const response = await fetch(videoSrc);
+    const videoData = await response.arrayBuffer();
+    const videoUint8Array = new Uint8Array(videoData);
+
+    // Write the video data to a temporary file
+    await ffmpeg.writeFile('temp_video.mp4', videoUint8Array);
+
+    await ffmpeg.exec([
+        '-i', 'temp_video.mp4',
+        '-vn', '-acodec', 'copy',
+        audioFileName
+    ]);
+
+    return audioFileName;
+};
+
+
+export const addAudioToVideo = async (videoBlob: Blob, audioFileName: string): Promise<Blob> => {
+    const ffmpeg = await FFmpegUtil.getFFmpegInstance();
+
+    const buffer = await videoBlob.arrayBuffer();
+    const uint8Array = new Uint8Array(buffer);
+    await ffmpeg.writeFile('input.webm', uint8Array);
+
+    await ffmpeg.exec([
+        '-i', 'input.webm',
+        '-i', audioFileName,
+        '-c:v', 'copy',
+        '-c:a', 'aac',
+        '-map', '0:v',
+        '-map', '1:a',
+        '-movflags', 'faststart',
+        'output.mp4'
+    ]);
+
+    const processedUint8Array = await ffmpeg.readFile('output.mp4');
+    const processedBlob = new Blob([processedUint8Array], { type: 'video/mp4' });
+
+    return processedBlob;
+};
 
 export default FFmpegUtil;
 
