@@ -27,10 +27,11 @@ function App(){
                            setVideoSrc={setVideoSrc}
                            setVideoType={setVideoType}
             />
+            {videoSrc && (
             <Transcript transcribedOutput={transcriber.output}
                         videoSrc={videoSrc}
                         videoType={videoType}
-            />
+            />)}
           </Container>
         </div>
     );
